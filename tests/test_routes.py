@@ -53,9 +53,9 @@ class TestAccountService(TestCase):
 
     @classmethod
     def setUpClass(cls):
-    """Run once before all tests"""
-    { other lines of code here ... }
-    talisman.force_https = False
+        """Run once before all tests"""
+       
+        talisman.force_https = False
 
     ######################################################################
     #  H E L P E R   M E T H O D S
@@ -182,7 +182,15 @@ class TestAccountService(TestCase):
         account = self._create_accounts(1)[0]
         resp = self.client.delete(f"{BASE_URL}/{account.id}")
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
-   
+
+    
+    def test_cors_security(self):
+        """It should return a CORS header"""
+        response = self.client.get('/', environ_overrides=HTTPS_ENVIRON)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Check for the CORS header
+        self.assertEqual(response.headers.get('Access-Control-Allow-Origin'), '*')
+
     def test_security_headers(self):
         """It should return security headers"""
         response = self.client.get('/', environ_overrides=HTTPS_ENVIRON)
